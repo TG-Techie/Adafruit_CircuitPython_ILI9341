@@ -84,5 +84,9 @@ _INIT_SEQUENCE = (
 # pylint: disable=too-few-public-methods
 class ILI9341(displayio.Display):
     """ILI9341 display driver"""
-    def __init__(self, bus, **kwargs):
-        super().__init__(bus, _INIT_SEQUENCE, **kwargs)
+    def __init__(self, bus, hardware_rotation=0, **kwargs):
+        init_seq = _INIT_SEQUENCE
+        init_seq += (b"\x36\x01\x58", b"\x36\x01\x38", b"\x36\x01\xD8", b"\x36\x01\xF8")[hardware_rotation%4]
+        if hardware_rotation%2: # if odd
+            kwargs['width'], kwargs['height'] = kwargs['height'], kwargs['width']
+        super().__init__(bus, init_seq, **kwargs)
